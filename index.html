@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>So… are we meeting?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #FFE5EC 0%, #F3E5F5 50%, #FFF3E0 100%);
+            transition: background 1s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body.shattered {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            animation: glitch 0.3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
+        }
+
+        .crack {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .crack-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            transform-origin: top left;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 192, 203, 0.6);
+            border-radius: 50%;
+            animation: float 4s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .heart-explosion {
+            position: absolute;
+            font-size: 24px;
+            animation: heartFloat 3s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes heartFloat {
+            0% { transform: translateY(0) scale(0); opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+        }
+
+        .broken-heart {
+            position: absolute;
+            font-size: 40px;
+            animation: fall 2s ease-in forwards;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .main-question {
+            font-size: clamp(28px, 6vw, 42px);
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 50px;
+            line-height: 1.3;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn {
+            padding: 18px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #FF6B9D 0%, #C44569 100%);
+            color: white;
+        }
+
+        .btn-yes:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-maybe {
+            background: white;
+            color: #C44569;
+            border: 2px solid #FF6B9D;
+        }
+
+        .btn-maybe:hover {
+            background: #FFF0F5;
+            transform: translateY(-3px);
+        }
+
+        .btn-no {
+            background: linear-gradient(135deg, #666 0%, #444 100%);
+            color: white;
+        }
+
+        .btn-no:hover {
+            background: linear-gradient(135deg, #555 0%, #333 100%);
+            transform: translateY(-3px);
+        }
+
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .popup-content {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: popIn 0.4s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .popup-text {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .popup-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .final-message {
+            display: none;
+            animation: fadeInScale 1s ease;
+        }
+
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .final-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(32px, 7vw, 48px);
+            color: #C44569;
+            margin-bottom: 20px;
+        }
+
+        .heartbreak-message {
+            display: none;
+            animation: fadeInScale 1s ease;
+        }
+
+        .heartbreak-text {
+            font-size: clamp(40px, 10vw, 80px);
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .heartbreak-subtitle {
+            font-size: clamp(18px, 4vw, 24px);
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.4);
+            font-style: italic;
+        }
+
+        body.romantic-bg {
+            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 50%, #FFD6E8 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContent">
+        <div class="main-question">
+            So… are we meeting at college tomorrow?
+        </div>
+        <div class="buttons">
+            <button class="btn btn-yes" onclick="handleYes()">Yes, obviously</button>
+            <button class="btn btn-maybe" onclick="showPopup('flower')">Maybe… convince me</button>
+        </div>
+    </div>
+
+    <div class="container final-message" id="finalMessage">
+        <div class="final-text" id="finalText">Good. I'll see you there.</div>
+    </div>
+
+    <div class="container heartbreak-message" id="heartbreakMessage">
+        <div class="heartbreak-text">💔</div>
+        <div class="heartbreak-subtitle">You broke my heart...</div>
+    </div>
+
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <div class="popup-text" id="popupText"></div>
+            <div class="popup-buttons" id="popupButtons"></div>
+        </div>
+    </div>
+
+    <div class="footer">This message will self-destruct after tomorrow's date.</div>
+
+    <script>
+        function createSparkles() {
+            for (let i = 0; i < 15; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 4 + 's';
+                sparkle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                document.body.appendChild(sparkle);
+            }
+        }
+
+        createSparkles();
+
+        function createHeartExplosion() {
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart-explosion';
+                    heart.textContent = '❤️';
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.top = '100%';
+                    heart.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        function createBrokenHearts() {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'broken-heart';
+                    heart.textContent = '💔';
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(heart);
+                    
+                    setTimeout(() => heart.remove(), 2000);
+                }, i * 150);
+            }
+        }
+
+        function createCracks() {
+            const crackContainer = document.createElement('div');
+            crackContainer.className = 'crack';
+            
+            // Create multiple crack lines
+            for (let i = 0; i < 15; i++) {
+                const crack = document.createElement('div');
+                crack.className = 'crack-line';
+                crack.style.width = '2px';
+                crack.style.height = Math.random() * 300 + 100 + 'px';
+                crack.style.left = Math.random() * 100 + '%';
+                crack.style.top = Math.random() * 100 + '%';
+                crack.style.transform = `rotate(${Math.random() * 360}deg)`;
+                crackContainer.appendChild(crack);
+            }
+            
+            document.body.appendChild(crackContainer);
+        }
+
+        function handleYes() {
+            document.getElementById('mainContent').style.display = 'none';
+            document.body.classList.add('romantic-bg');
+            createHeartExplosion();
+            
+            const finalMsg = document.getElementById('finalMessage');
+            finalMsg.style.display = 'block';
+        }
+
+        function showPopup(stage) {
+            const popup = document.getElementById('popup');
+            const popupText = document.getElementById('popupText');
+            const popupButtons = document.getElementById('popupButtons');
+            
+            if (stage === 'flower') {
+                popupText.textContent = "Fine… I'll come with a flower. Now say yes?";
+                popupButtons.innerHTML = `
+                    <button class="btn btn-yes" onclick="handleConvinced()">Convinced</button>
+                    <button class="btn btn-maybe" onclick="showPopup('chocolate')">Not yet</button>
+                `;
+            } else if (stage === 'chocolate') {
+                popupText.textContent = "Okay… I'll bring chocolate too. Now?";
+                popupButtons.innerHTML = `
+                    <button class="btn btn-yes" onclick="handleConvinced()">Okay now I'm convinced</button>
+                    <button class="btn btn-maybe" onclick="showPopup('pleading')">Still not convinced</button>
+                `;
+            } else if (stage === 'pleading') {
+                popupText.textContent = "Please don't break my heart 💔";
+                popupButtons.innerHTML = `
+                    <button class="btn btn-yes" onclick="showPopup('clickhere')">Click here</button>
+                `;
+            } else if (stage === 'clickhere') {
+                popupText.innerHTML = "<em>Don't tear me apart...</em>";
+                popupText.style.fontFamily = "'Dancing Script', cursive";
+                popupText.style.fontSize = "26px";
+                popupText.style.color = "#C44569";
+                popupButtons.innerHTML = `
+                    <button class="btn btn-yes" onclick="handleConvinced()">Okay my love, I will meet you there ❤️❤️</button>
+                    <button class="btn btn-no" onclick="showPopup('confirm')">Definitely no</button>
+                `;
+            } else if (stage === 'confirm') {
+                popupText.textContent = "Are you sure? 🥺";
+                popupText.style.fontFamily = "'Poppins', sans-serif";
+                popupText.style.fontSize = "22px";
+                popupText.style.color = "#333";
+                popupButtons.innerHTML = `
+                    <button class="btn btn-no" onclick="handleHeartbreak()">Yes</button>
+                    <button class="btn btn-yes" onclick="handleConvinced()">No</button>
+                `;
+            }
+            
+            popup.style.display = 'flex';
+        }
+
+        function handleConvinced() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'none';
+            document.body.classList.add('romantic-bg');
+            createHeartExplosion();
+            
+            const finalMsg = document.getElementById('finalMessage');
+            document.getElementById('finalText').textContent = "Perfect. I'll be waiting.";
+            finalMsg.style.display = 'block';
+        }
+
+        function handleHeartbreak() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'none';
+            
+            // Shatter effect
+            document.body.classList.add('shattered');
+            createCracks();
+            createBrokenHearts();
+            
+            // Show heartbreak message
+            setTimeout(() => {
+                document.getElementById('heartbreakMessage').style.display = 'block';
+            }, 500);
+        }
+
+        // Close popup when clicking outside
+        document.getElementById('popup').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
